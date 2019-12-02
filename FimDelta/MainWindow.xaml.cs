@@ -41,8 +41,13 @@ namespace FimDelta
         {
             try
             {
-                delta = DeltaParser.ReadDelta(Settings.Default.SourceFile, Settings.Default.TargetFile, Settings.Default.DeltaFile);
-                
+                string src = Utils.BrowseForFile("Select the Source file");
+                string tgt = Utils.BrowseForFile("Select the Target file");
+                string dlt = Utils.BrowseForFile("Select the Changes file");
+
+                // delta = DeltaParser.ReadDelta(Settings.Default.SourceFile, Settings.Default.TargetFile, Settings.Default.DeltaFile);
+                delta = DeltaParser.ReadDelta(src, tgt, dlt);
+
                 deltaVC = new DeltaViewController(delta);
                 view.Source = deltaVC.View;
             }
@@ -72,8 +77,11 @@ namespace FimDelta
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (delta == null) return;
-
-            DeltaParser.SaveDelta(delta, Settings.Default.SaveTo);
+            var dir = Utils.BrowseForFolder("Select Output Directory");
+            var file = "MIM_Delta_" + DateTime.Now.ToString("yyyyMMdd_hhmmss") + ".xml";
+            file = System.IO.Path.Combine(dir, file);
+            DeltaParser.SaveDelta(delta, file);
+            MessageBox.Show(string.Format("File saved as '{0}'", file), "File Saved", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
